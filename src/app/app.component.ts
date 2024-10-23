@@ -1,14 +1,25 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { NavbarComponent } from './navbar/navbar.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  template: '<router-outlet></router-outlet>',
-  //templateUrl: './app.component.html',
-  //styleUrl: './app.component.css'
+  imports: [RouterOutlet, NavbarComponent, CommonModule],
+  template: `
+    <app-navbar *ngIf="!isLoginPage"></app-navbar>
+    <router-outlet></router-outlet>
+  `,
 })
 export class AppComponent {
-  title = 'login-dashboard-angular';
+  isLoginPage: boolean = false;
+
+  constructor(private router: Router) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.isLoginPage = event.url === '/login';
+      }
+    });
+  }
 }
